@@ -4,6 +4,7 @@ package com.monica.personalfinancetracker.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.monica.personalfinancetracker.dto.ExpenseDTO;
@@ -31,13 +32,12 @@ public class ExpenseService {
 		
 		Category category = categoryRepository.findById(expenseDTO.getCategory().getId()).orElseThrow(()-> new ResourceNotFoundException("Category not found with id: " + expenseDTO.getCategory().getId()));
 		expense.setCategory(category);
-		Expense savedExpense = expenseRepository.save(expense); //jpa returns saved/persisted entity
+		Expense savedExpense = expenseRepository.save(expense); 
 		return ExpenseMapper.toDTO(savedExpense);
 	}
 	
-	public Page<ExpenseDTO> getAllExpenses(int page, int size){
-		
-		Pageable pageable = PageRequest.of(page, size);
+	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy){
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
 		
 		Page<Expense> expensePage = expenseRepository.findAll(pageable);
 		
@@ -55,14 +55,12 @@ public class ExpenseService {
 		Expense existingExpense = expenseRepository.findById(id)
 				.orElseThrow(()-> new ResourceNotFoundException("Expense not found with id: " + id));
 		
-		//find if the category id added by user is present in db or not
 		Category category = categoryRepository.findById(updatedExpenseDTO.getCategory().getId()).orElseThrow(()-> new ResourceNotFoundException("Category not found with id: " + id));
 		
 		existingExpense.setTitle(updatedExpenseDTO.getTitle());
 		existingExpense.setAmount(updatedExpenseDTO.getAmount());
 		existingExpense.setDate(updatedExpenseDTO.getDate());
 		
-		//if present attach the category object to expense obj
 		existingExpense.setCategory(category);
 		
 		Expense updatedExpense = expenseRepository.save(existingExpense);
