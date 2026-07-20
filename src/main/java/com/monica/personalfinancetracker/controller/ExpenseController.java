@@ -37,8 +37,9 @@ public class ExpenseController {
     public Page<ExpenseDTO> getAllExpenses(
     		@RequestParam(defaultValue = "0") int page, 
     		@RequestParam(defaultValue = "5") int size,
-    		@RequestParam(defaultValue = "id") String sortBy){
-    	return expenseService.getAllExpenses(page, size, sortBy);
+    		@RequestParam(defaultValue = "id") String sortBy,
+    		@RequestParam(defaultValue = "asc") String direction){
+    	return expenseService.getAllExpenses(page, size, sortBy, direction);
     }
     
     @GetMapping("/{id}")

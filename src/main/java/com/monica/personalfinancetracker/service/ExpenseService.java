@@ -1,6 +1,8 @@
 package com.monica.personalfinancetracker.service;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,10 @@ public class ExpenseService {
 	private final ExpenseRepository expenseRepository ;
 	
 	private final CategoryRepository categoryRepository;
+	
+	private static final List<String> ALLOWED_SORT_FEILDS =  List.of("id", "title", "amount", "date");
+	
+	private static final List<String> ALLOWED_DIRECTIONS = List.of("asc", "desc");
 
 	public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository ) {
 		this.expenseRepository = expenseRepository;
@@ -36,10 +42,21 @@ public class ExpenseService {
 		return ExpenseMapper.toDTO(savedExpense);
 	}
 	
-	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy){
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy, String direction){
 		
-		Page<Expense> expensePage = expenseRepository.findAll(pageable);
+		if(!ALLOWED_SORT_FEILDS.contains(sortBy)) {
+			throw new IllegalArgumentException("Invalid sort field. Allowed values are: " + ALLOWED_SORT_FEILDS);
+		}
+		
+		if(!ALLOWED_DIRECTIONS.contains(direction.toLowerCase())) {
+			throw new IllegalArgumentException("Invalid direction. Allowed values are: " + ALLOWED_DIRECTIONS);
+		}
+		
+		Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+		
+		Pageable pageable = PageRequest.of(page, size, sort);
+		
+		Page<Expense> expensePage = expenseRepository.findAll(pageable); 	
 		
 		return expensePage.map(ExpenseMapper::toDTO);
 	}
