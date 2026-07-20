@@ -2,6 +2,7 @@ package com.monica.personalfinancetracker.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.monica.personalfinancetracker.dto.ExpenseDTO;
@@ -33,9 +35,12 @@ public class ExpenseController {
     	return expenseService.saveExpense(expenseDTO);
     }
     
+   
     @GetMapping
-    public List<ExpenseDTO> getAllExpenses(){
-    	return expenseService.getAllExpenses();
+    public Page<ExpenseDTO> getAllExpenses(
+    		@RequestParam(defaultValue = "0") int page, 
+    		@RequestParam(defaultValue = "5") int size){
+    	return expenseService.getAllExpenses(page, size);
     }
     
     @GetMapping("/{id}")

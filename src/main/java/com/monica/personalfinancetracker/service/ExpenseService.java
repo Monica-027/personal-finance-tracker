@@ -1,9 +1,9 @@
 package com.monica.personalfinancetracker.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.monica.personalfinancetracker.dto.ExpenseDTO;
@@ -35,16 +35,13 @@ public class ExpenseService {
 		return ExpenseMapper.toDTO(savedExpense);
 	}
 	
-	public List<ExpenseDTO> getAllExpenses(){
-		List<Expense> expenses = expenseRepository.findAll();
+	public Page<ExpenseDTO> getAllExpenses(int page, int size){
 		
-		List<ExpenseDTO> expenseDTOs = new ArrayList<>();
+		Pageable pageable = PageRequest.of(page, size);
 		
-		for(Expense exp : expenses) {
-			expenseDTOs.add(ExpenseMapper.toDTO(exp));
-		}
+		Page<Expense> expensePage = expenseRepository.findAll(pageable);
 		
-		return expenseDTOs;
+		return expensePage.map(ExpenseMapper::toDTO);
 	}
 	
 	public ExpenseDTO getExpense(Long id) {
