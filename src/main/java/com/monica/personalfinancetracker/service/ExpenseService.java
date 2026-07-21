@@ -42,7 +42,7 @@ public class ExpenseService {
 		return ExpenseMapper.toDTO(savedExpense);
 	}
 	
-	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy, String direction){
+	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy, String direction, String category){
 		
 		if(!ALLOWED_SORT_FEILDS.contains(sortBy)) {
 			throw new IllegalArgumentException("Invalid sort field. Allowed values are: " + ALLOWED_SORT_FEILDS);
@@ -56,7 +56,13 @@ public class ExpenseService {
 		
 		Pageable pageable = PageRequest.of(page, size, sort);
 		
-		Page<Expense> expensePage = expenseRepository.findAll(pageable); 	
+		Page<Expense> expensePage;
+		
+		if(category == null) {
+			expensePage = expenseRepository.findAll(pageable); 	
+		}else {
+			expensePage = expenseRepository.findByCategoryNameIgnoreCase(category, pageable); 	
+		}
 		
 		return expensePage.map(ExpenseMapper::toDTO);
 	}
