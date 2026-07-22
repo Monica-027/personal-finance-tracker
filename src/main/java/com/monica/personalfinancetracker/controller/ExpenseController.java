@@ -1,6 +1,8 @@
 package com.monica.personalfinancetracker.controller;
 
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +42,10 @@ public class ExpenseController {
     		@RequestParam(defaultValue = "id") String sortBy,
     		@RequestParam(defaultValue = "asc") String direction,
     		@RequestParam(required = false) String category,
-    		@RequestParam(required = false) String title){
-    	return expenseService.getAllExpenses(page, size, sortBy, direction, category, title);
+    		@RequestParam(required = false) String title,
+    		@RequestParam(required = false) LocalDate startDate,
+    		@RequestParam(required = false) LocalDate endDate){
+    	return expenseService.getAllExpenses(page, size, sortBy, direction, category, title, startDate, endDate);
     }
     
     @GetMapping("/{id}")

@@ -1,5 +1,6 @@
 package com.monica.personalfinancetracker.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class ExpenseService {
 	}
 
 	public Page<ExpenseDTO> getAllExpenses(int page, int size, String sortBy, String direction, String category,
-			String title) {
+			String title,LocalDate startDate, LocalDate endDate) {
 
 		if (!ALLOWED_SORT_FEILDS.contains(sortBy)) {
 			throw new IllegalArgumentException("Invalid sort field. Allowed values are: " + ALLOWED_SORT_FEILDS);
@@ -58,8 +59,15 @@ public class ExpenseService {
 		Pageable pageable = PageRequest.of(page, size, sort);
 
 		Page<Expense> expensePage;
-
-		if ((category == null || category.isBlank()) && (title == null || title.isBlank())) {
+		
+		//Validating the date
+		if(startDate != null && endDate != null && startDate.isAfter(endDate)) {
+			throw new IllegalArgumentException("Start date can't be after end Date");
+		}
+		
+		if(startDate != null && endDate != null){
+			expensePage = expenseRepository.findByDateBetween(startDate, endDate, pageable);
+		}else if ((category == null || category.isBlank()) && (title == null || title.isBlank())) {
 			expensePage = expenseRepository.findAll(pageable);
 		} else if ((category != null && !category.isBlank()) && (title == null || title.isBlank())) {
 			expensePage = expenseRepository.findByCategoryNameIgnoreCase(category, pageable);

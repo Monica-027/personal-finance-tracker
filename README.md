@@ -98,7 +98,6 @@ cd personal-finance-tracker
 
 ## Future Improvements
 
-- Pagination & Sorting
 - Filtering
 - Swagger/OpenAPI
 - JWT Authentication
